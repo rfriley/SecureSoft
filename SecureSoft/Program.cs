@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SecureSoft.Data;
@@ -20,7 +22,8 @@ namespace SecureSoft
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
 
-            var app = builder.Build();
+            var app = builder.Build();          
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -36,6 +39,28 @@ namespace SecureSoft
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+            ctx.Context.Response.Headers.Add("X-Content-Type-Options", "nosniff")
+            });
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                context.Response.Headers.Add("X-Xss-Protection", "1");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("Cache-Control", "no-cache, no-store, must- revalidate");
+                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'; frame-ancestors 'self'");
+                await next();
+            });
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly =
+            Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
 
             app.UseRouting();
 
