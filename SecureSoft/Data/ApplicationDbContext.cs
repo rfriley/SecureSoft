@@ -10,7 +10,10 @@ namespace SecureSoft.Data
             : base(options)
         {
         }
-        public DbSet<Assignment4.Models.Employee> Employee { get; set; } = default!;
-        public DbSet<Assignment4.Models.Order> Order { get; set; } = default!;
+        public virtual DbSet<Employee> Employee { get; set; }
+
+        public virtual DbSet<Order> Order { get; set; }
+
+        public virtual DbSet<Shipper> Shippers { get; set; }
     }
 }
