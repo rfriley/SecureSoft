@@ -76,6 +76,7 @@ namespace SecureSoft.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [NorthwindEmail]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
