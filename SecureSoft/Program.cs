@@ -12,6 +12,8 @@ namespace SecureSoft
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.WebHost.UseKestrel(opts => opts.AddServerHeader = false);
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -53,6 +55,7 @@ namespace SecureSoft
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Add("Cache-Control", "no-cache, no-store, must- revalidate");
                 context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'; frame-ancestors 'self'");
+                context.Response.Headers.Remove("X-Powered-By");
                 await next();
             });
             app.UseCookiePolicy(new CookiePolicyOptions
